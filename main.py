@@ -62,7 +62,7 @@ def run(going_to, coming_from):
         run(compass[going_to], going_to)
     elif (4 - len(walls)) == 2:
         walk(paths[going_to])
-        run(compass[going_to])
+        run(compass[going_to], going_to)
 
 
 def get_options(position, walls):
