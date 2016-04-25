@@ -58,40 +58,24 @@ def run(direction):
     print_matrix()
 
     runner_position = get_runner_position()
-    walls = get_options(runner_position, walls=1)
-    paths = get_options(runner_position, walls=0)
+    paths = get_paths(runner_position)
     paths.pop(compass[direction], None)
 
-    debug(direction, walls, paths)
-
-    if len(paths) == 1:
-        walk(list(paths.values())[0])
-        run(list(paths.keys())[0])
-    elif len(paths) == 0:
+    if len(paths) == 0:
         run(compass[direction])
     elif len(paths) == 2:
         walk(paths[direction])
-        # run(direction)
+        run(direction)
+    elif len(paths) == 1:
+        walk(list(paths.values())[0])
+        run(list(paths.keys())[0])
 
 
-def debug(direction, walls, paths):
-    print("Going To", direction, sep="\t\t\t")
-    print("Coming From", compass[direction], sep="\t\t\t")
-
-    print("Walls", walls, sep="\t\t\t")
-    print("Paths", paths, sep="\t\t\t")
-    print()
-
-
-def get_options(position, walls):
-    north = {"north": [position[0] - 1, position[1]]} \
-        if (matrix[position[0] - 1][position[1]]) == ("1" if walls == 1 else "0") else {}
-    south = {"south": [position[0] + 1, position[1]]} \
-        if (matrix[position[0] + 1][position[1]]) == ("1" if walls == 1 else "0") else {}
-    east = {"east": [position[0], position[1] + 1]} \
-        if (matrix[position[0]][position[1] + 1]) == ("1" if walls == 1 else "0") else {}
-    west = {"west": [position[0], position[1] - 1]} \
-        if (matrix[position[0]][position[1] - 1]) == ("1" if walls == 1 else "0") else {}
+def get_paths(position):
+    north = {"north": [position[0] - 1, position[1]]} if (matrix[position[0] - 1][position[1]]) == "0" else {}
+    south = {"south": [position[0] + 1, position[1]]} if (matrix[position[0] + 1][position[1]]) == "0" else {}
+    east = {"east": [position[0], position[1] + 1]} if (matrix[position[0]][position[1] + 1]) == "0" else {}
+    west = {"west": [position[0], position[1] - 1]} if (matrix[position[0]][position[1] - 1]) == "0" else {}
     options = {**north, **south, **east, **west}
     # options = {}
     # options.update(north)
@@ -115,9 +99,11 @@ def main():
                   ['1', '0', '1', '0', '0', '0', 'O', '1'],
                   ['1', '1', '1', '1', '1', '1', '1', '1']]
         print("File not found.")
-    # matrix = matrix_test
-    initial_move()
 
-    run("east")
+    initial_move()
+    try:
+        run("east")
+    except RecursionError:
+        print("\nInfinite loop.")
 
 main()
