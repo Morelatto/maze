@@ -101,6 +101,7 @@ def main():
         print("File not found.")
 
     initial_move()
+
     try:
         run("east")
     except RecursionError:
