@@ -1,9 +1,10 @@
 from __future__ import print_function
 
-# matrix = [[]]
-matrix = [['1', '1', '1', '1', '1', '1', '1', '1'], ['1', 'I', '0', '0', '0', '0', '0', '1'], ['1', '0', '1', '1', '1', '1', '1', '1'], ['1', '0', '0', '0', '1', '0', '0', '1'], ['1', '0', '1', '0', '1', '0', '1', '1'], ['1', '0', '1', '0', '0', '0', 'O', '1'], ['1', '1', '1', '1', '1', '1', '1', '1']]
+matrix = [[]]
 
-matrix_test = [["I", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "O"]]
+matrix_test = [["1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"],
+               ["1", "I", "0", "0", "0", "0", "0", "0", "0", "0", "O", "1"],
+               ["1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"]]
 
 compass = {"north": "south", "south": "north", "east": "west", "west": "east"}
 
@@ -35,12 +36,13 @@ def print_matrix():
 
 
 def initial_move():
+    print_matrix()
     walk([1, 2])
 
 
 def walk(new_pos):
     old_pos = get_runner_position()
-    matrix[old_pos[0]][old_pos[1]], matrix[new_pos[0]][new_pos[1]] = 0, matrix[old_pos[0]][old_pos[1]]
+    matrix[old_pos[0]][old_pos[1]], matrix[new_pos[0]][new_pos[1]] = "0", matrix[old_pos[0]][old_pos[1]]
 
 
 def get_runner_position(runner="I"):
@@ -53,7 +55,6 @@ def get_runner_position(runner="I"):
 
 
 def run(direction):
-    print("===============================")
     print_matrix()
 
     runner_position = get_runner_position()
@@ -61,16 +62,11 @@ def run(direction):
     paths = get_options(runner_position, walls=0)
     paths.pop(compass[direction], None)
 
-    print("Going To", direction, sep=" - ")
-    print("Coming From", compass[direction], sep=" - ")
-
-    print("Walls", walls, sep=" - ")
-    print("Paths", paths, sep=" - ")
-    print("===============================\n")
+    debug(direction, walls, paths)
 
     if len(paths) == 1:
-        walk(list(dict.values(paths))[0])
-        run(list(dict.keys(paths))[0])
+        walk(list(paths.values())[0])
+        run(list(paths.keys())[0])
     elif len(paths) == 0:
         run(compass[direction])
     elif len(paths) == 2:
@@ -78,24 +74,48 @@ def run(direction):
         # run(direction)
 
 
+def debug(direction, walls, paths):
+    print("Going To", direction, sep="\t\t\t")
+    print("Coming From", compass[direction], sep="\t\t\t")
+
+    print("Walls", walls, sep="\t\t\t")
+    print("Paths", paths, sep="\t\t\t")
+    print()
+
+
 def get_options(position, walls):
-    north = {"north": [position[0] - 1, position[1]]} if str(matrix[position[0] - 1][position[1]]) == ("1" if walls == 1 else "0") else {}   
-    south = {"south": [position[0] + 1, position[1]]} if str(matrix[position[0] + 1][position[1]]) == ("1" if walls == 1 else "0") else {}
-    east = {"east": [position[0], position[1] + 1]} if str(matrix[position[0]][position[1] + 1]) == ("1" if walls == 1 else "0") else {}
-    west = {"west": [position[0], position[1] - 1]} if str(matrix[position[0]][position[1] - 1]) == ("1" if walls == 1 else "0") else {}
-    # options = {**north, **south, **east, **west}
-    options = {}
-    options.update(north)
-    options.update(south)
-    options.update(east)
-    options.update(west)
+    north = {"north": [position[0] - 1, position[1]]} \
+        if (matrix[position[0] - 1][position[1]]) == ("1" if walls == 1 else "0") else {}
+    south = {"south": [position[0] + 1, position[1]]} \
+        if (matrix[position[0] + 1][position[1]]) == ("1" if walls == 1 else "0") else {}
+    east = {"east": [position[0], position[1] + 1]} \
+        if (matrix[position[0]][position[1] + 1]) == ("1" if walls == 1 else "0") else {}
+    west = {"west": [position[0], position[1] - 1]} \
+        if (matrix[position[0]][position[1] - 1]) == ("1" if walls == 1 else "0") else {}
+    options = {**north, **south, **east, **west}
+    # options = {}
+    # options.update(north)
+    # options.update(south)
+    # options.update(east)
+    # options.update(west)
     return options
 
 
 def main():
     global matrix
-    # matrix = file_to_matrix("maze.txt")
 
+    try:
+        matrix = file_to_matrix("maze.txt")
+    except FileNotFoundError:
+        matrix = [['1', '1', '1', '1', '1', '1', '1', '1'],
+                  ['1', 'I', '0', '0', '0', '0', '0', '1'],
+                  ['1', '0', '1', '1', '1', '1', '1', '1'],
+                  ['1', '0', '0', '0', '1', '0', '0', '1'],
+                  ['1', '0', '1', '0', '1', '0', '1', '1'],
+                  ['1', '0', '1', '0', '0', '0', 'O', '1'],
+                  ['1', '1', '1', '1', '1', '1', '1', '1']]
+        print("File not found.")
+    # matrix = matrix_test
     initial_move()
 
     run("east")
