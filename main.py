@@ -1,11 +1,11 @@
 matrix = [[]]
+matrix_test = [["I", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "O"]]
+
 compass = {"north": "south", "south": "north", "east": "west", "west": "east"}
 
 
 def file_to_matrix(filename, total_lines=7, total_columns=7):
-
     m = [[0 for _ in range(total_columns)] for _ in range(total_lines)]
-
     line, column = 0, 0
 
     with open(filename) as f:
@@ -44,21 +44,25 @@ def get_runner_position(runner="I"):
     return runner_position
 
 
-def run(direction="east"):
+def run(going_to, coming_from):
     print_matrix()
 
     runner_position = get_runner_position()
     walls = get_options(runner_position, walls=1)
     paths = get_options(runner_position, walls=0)
+    paths.pop(coming_from, None)
 
     print("Walls -", walls)
     print("Paths -", paths)
 
+    print("Going To -", going_to)
+    print("Coming From -", coming_from)
+
     if len(walls) == 3:
-        run(compass[direction])
+        run(compass[going_to], going_to)
     elif (4 - len(walls)) == 2:
-        walk(paths[direction])
-        run(compass[direction])
+        walk(paths[going_to])
+        run(compass[going_to])
 
 
 def get_options(position, walls):
@@ -81,7 +85,6 @@ def main():
     #
     # print(get_runner_position())
 
-    run()
-
+    run("east", compass["east"])
 
 main()
