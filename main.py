@@ -4,7 +4,7 @@ compass = {"north": "south", "south": "north", "east": "west", "west": "east"}
 
 def file_to_matrix(filename, total_lines=7, total_columns=7):
 
-    m = [[0 for x in range(total_columns)] for y in range(total_lines)]
+    m = [[0 for _ in range(total_columns)] for _ in range(total_lines)]
 
     line, column = 0, 0
 
